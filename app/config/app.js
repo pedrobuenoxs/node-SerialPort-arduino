@@ -4,8 +4,8 @@ const app = express();
 const Router = express.Router;
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("final paper health check");
+app.get("/health", (req, res) => {
+  res.send("healthy");
 });
 
-module.exports = { app, Router };
+module.exports = { app, Router, express };
