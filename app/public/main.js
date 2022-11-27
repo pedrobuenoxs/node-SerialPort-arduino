@@ -4,7 +4,22 @@ socket.on("connect", function () {
 });
 
 socket.on("data", function (data) {
-  console.log("Data:", data);
+  const dataArray = data.split(" ");
+  const Xraw = dataArray[3];
+  const Yraw = dataArray[6];
+  const Zraw = dataArray[9].replace("\r\n", "");
+  const Xnorm = dataArray[12];
+  const Ynorm = dataArray[15];
+  const Znorm = dataArray[18].replace("\r\n", "");
+  const dataObj = {
+    Xraw: Xraw,
+    Yraw: Yraw,
+    Zraw: Zraw,
+    Xnorm: Xnorm,
+    Ynorm: Ynorm,
+    Znorm: Znorm,
+  };
+  ws_data.push(dataObj);
 });
 function sendMessage(message) {
   fetch("http://localhost:3000/connect", {
@@ -25,20 +40,15 @@ socket.on("port", function (port) {
   });
 });
 
-var wb = XLSX.utils.book_new();
-wb.Props = {
-  Title: "SheetJS Tutorial",
-  Subject: "Test",
-  Author: "Red Stapler",
-  CreatedDate: new Date(2017, 12, 19),
-};
-
-wb.SheetNames.push("Test Sheet");
-var ws_data = [["hello", "world"]];
-var ws = XLSX.utils.aoa_to_sheet(ws_data);
-wb.Sheets["Test Sheet"] = ws;
-
-var wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
+let ws_data = [];
+function createExcel(data) {
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(data);
+  wb.Sheets["Record"] = ws;
+  XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
+  var wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
+  return wbout;
+}
 
 function s2ab(s) {
   var buf = new ArrayBuffer(s.length);
@@ -48,8 +58,11 @@ function s2ab(s) {
 }
 
 $("#button-a").click(function () {
+  console.log(ws_data);
+  const array = ws_data.splice(0, 2);
+  const buf = createExcel(ws_data);
   saveAs(
-    new Blob([s2ab(wbout)], { type: "application/octet-stream" }),
+    new Blob([s2ab(buf)], { type: "application/octet-stream" }),
     "test.xlsx"
   );
 });
