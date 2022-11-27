@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <script src="/socket.io/socket.io.js" charset="utf-8"></script>
 <script type="module" src="./main.js"></script>
@@ -26,38 +28,26 @@
           </div>
         </div>
       </form>
+      <button id="button-a" class="btn btn-primary">Create Excel</button>
 </body>
 <script>
-  $(() => {
-    $("#send").click(()=>{
-       sendMessage({port: $("#inlineFormCustomSelect").val()});
-    })
-  })
 
-    
-function addMessages(message){
-   $("#messages").append(`
-      <h4> ${message.name} </h4>
-      <p>  ${message.message} </p>`)
-   }
-   
-function getMessages(){
-  $.get('http://localhost:3000/messages', (data) => {
-   data.forEach(addMessages);
-   })
- }
- 
-function sendMessage(message){
-  fetch("http://localhost:3000/connect", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(message),
-})
-  .catch((error) => {
-    console.error("Error:", error);
+$(() => {
+  $("#send").click(() => {
+    sendMessage({ port: $("#inlineFormCustomSelect").val() });
   });
- }
+});
+
+function sendMessage(message) {
+  fetch("http://localhost:3000/connect", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
+}
 </script>
-</html>
+</html> 
+
+
