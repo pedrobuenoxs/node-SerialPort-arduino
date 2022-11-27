@@ -25,20 +25,6 @@ app.post("/connect", async (req, res) => {
   });
 });
 
-app.post("/record", async (req, res) => {
-  console.log(req.body);
-  serialport = await setDevice(req.body.port);
-  const { time } = req.body;
-  let text = "";
-  setInterval(() => {
-    serialport.on("data", (data) => {
-      text = text + data.toString();
-    });
-  }, time);
-  console.log(text);
-  res.sendFile(path.join(__dirname, "../../data.txt"));
-});
-
 import { Server } from "socket.io";
 import { getPaths, setDevice } from "../serial-port/index.js";
 const io = new Server(server);

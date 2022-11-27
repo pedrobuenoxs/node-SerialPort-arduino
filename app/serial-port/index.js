@@ -13,7 +13,6 @@ const getPaths = async () => {
   const results = arr.filter((element) => {
     return element !== undefined;
   });
-
   return results;
 };
 
