@@ -30,10 +30,10 @@
 <script>
   $(() => {
     $("#send").click(()=>{
-       sendMessage({port: $("#inlineFormCustomSelect").val()})
+       sendMessage({port: $("#inlineFormCustomSelect").val()});
     })
   })
-  
+
     
 function addMessages(message){
    $("#messages").append(`

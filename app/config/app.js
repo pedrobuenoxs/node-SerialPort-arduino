@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 const app = express();
+import fs from "fs";
 
 import http from "http";
 const server = http.createServer(app);
@@ -18,12 +19,24 @@ app.get("/health", (req, res) => {
 });
 var serialport;
 app.post("/connect", async (req, res) => {
-  // console.log("req.body", req.body);
   serialport = await setDevice(req.body.port);
   serialport.on("data", (data) => {
-    // console.log("data", data.toString());
     io.emit("data", data.toString());
   });
+});
+
+app.post("/record", async (req, res) => {
+  console.log(req.body);
+  serialport = await setDevice(req.body.port);
+  const { time } = req.body;
+  let text = "";
+  setInterval(() => {
+    serialport.on("data", (data) => {
+      text = text + data.toString();
+    });
+  }, time);
+  console.log(text);
+  res.sendFile(path.join(__dirname, "../../data.txt"));
 });
 
 import { Server } from "socket.io";
@@ -32,7 +45,7 @@ const io = new Server(server);
 
 io.on("connection", async function (socket) {
   console.log("A user connected");
-  //Whenever someone disconnects this piece of code executed
+
   socket.on("disconnect", function () {
     console.log("A user disconnected");
   });
