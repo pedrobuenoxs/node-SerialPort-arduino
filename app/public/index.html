@@ -5,10 +5,59 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <script src="/socket.io/socket.io.js" charset="utf-8"></script>
-<script src="./main.js"></script>
+<script type="module" src="./main.js"></script>
 
 <body>
+    <form>
+        <div class="form-row align-items-center">
+          <div class="col-auto my-1">
+            <label class="mr-sm-2" for="inlineFormCustomSelect">Preference</label>
+            <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+              <option selected>Choose...</option>
+            </select>
+          </div>
+          <div class="col-auto my-1">
+            <button id="send" type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
 </body>
+<script>
+  $(() => {
+    $("#send").click(()=>{
+       sendMessage({port: $("#inlineFormCustomSelect").val()})
+    })
+  })
+  
+    
+function addMessages(message){
+   $("#messages").append(`
+      <h4> ${message.name} </h4>
+      <p>  ${message.message} </p>`)
+   }
+   
+function getMessages(){
+  $.get('http://localhost:3000/messages', (data) => {
+   data.forEach(addMessages);
+   })
+ }
+ 
+function sendMessage(message){
+  fetch("http://localhost:3000/connect", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(message),
+})
+  .catch((error) => {
+    console.error("Error:", error);
+  });
+ }
+</script>
 </html>

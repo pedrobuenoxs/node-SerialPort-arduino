@@ -1,16 +1,34 @@
-const SerialPort = require("serialport").SerialPort;
+import { SerialPort } from "serialport";
 
-const serialport = new SerialPort({ path: "/dev/ttyUSB1", baudRate: 115200 });
+// const serialport = new SerialPort({ path: "/dev/ttyUSB0", baudRate: 115200 });
 
-// Read data that is available but keep the stream in "paused mode"
-// serialport.on("readable", function () {
-//   console.log("Data:", serialport.read());
-// });
+const getPaths = async () => {
+  const pathArray = await SerialPort.list();
+  const arr = pathArray.map((element) => {
+    if (element.serialNumber !== undefined) {
+      return element.path;
+    }
+  });
 
-// Switches the port into "flowing mode"
-serialport.on("data", function (data) {
-  console.log("Data:", data.toString());
-});
+  const results = arr.filter((element) => {
+    return element !== undefined;
+  });
 
-// Pipe the data into another stream (like a parser or standard out)
-// const lineStream = serialport.pipe(new Readline());
+  return results;
+};
+
+const setDevice = async (path) => {
+  try {
+    if (!path) throw new Error("No path provided");
+    return new Promise((resolve, reject) => {
+      const serialport = new SerialPort({ path: path, baudRate: 115200 });
+      resolve(serialport);
+    }).catch((err) => {
+      console.log(err);
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export { getPaths, setDevice };
