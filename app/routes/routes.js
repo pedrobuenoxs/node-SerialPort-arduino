@@ -1,11 +1,4 @@
 import { getPaths, setDevice } from "../serial-port/index.js";
-import * as XLSX from "xlsx/xlsx.mjs";
-
-const data = [
-  { name: "Diary", code: "diary_code", author: "Pagorn" },
-  { name: "Note", code: "note_code", author: "Pagorn" },
-  { name: "Medium", code: "medium_code", author: "Pagorn" },
-];
 
 const socketConnect = async (app, io) => {
   const port = await getPaths();

@@ -19,7 +19,10 @@ socket.on("data", function (data) {
     Ynorm: Ynorm,
     Znorm: Znorm,
   };
+  console.log(dataObj);
   ws_data.push(dataObj);
+
+  moveElement(player, -Xraw * 0.1, Yraw * 0.1);
 });
 function sendMessage(message) {
   fetch("http://localhost:3000/connect", {
@@ -66,3 +69,93 @@ $("#button-a").click(function () {
     "test.xlsx"
   );
 });
+
+var cnv = document.querySelector("canvas");
+var ctx = cnv.getContext("2d");
+var scoreSpan = document.querySelector("#score");
+
+var player = {
+  x: cnv.width / 2 - 50,
+  y: cnv.height - 100,
+  w: 100,
+  h: 100,
+  color: "black",
+  score: 0,
+};
+
+var obstacle = {
+  x: Math.random() * cnv.width - 50,
+  y: Math.random() * cnv.height - 50,
+  w: 50,
+  h: 50,
+  color: "white",
+};
+
+var canva = {
+  x: 0,
+  y: 0,
+  w: cnv.width,
+  h: cnv.height,
+  color: "white",
+};
+
+window.addEventListener("keydown", function (event) {
+  if (event.key == "ArrowRight") {
+    player.x += 10;
+  }
+  if (event.key == "ArrowLeft") {
+    player.x -= 10;
+  }
+  if (event.key == "ArrowUp") {
+    player.y -= 10;
+  }
+  if (event.key == "ArrowDown") {
+    player.y += 10;
+  }
+});
+
+function collision(player, obstacle) {
+  if (
+    player.x + player.w > obstacle.x &&
+    player.x < obstacle.x + obstacle.w &&
+    player.y + player.h > obstacle.y &&
+    player.y < obstacle.y + obstacle.h
+  ) {
+    moveElement(
+      obstacle,
+      Math.random() * cnv.width - 50,
+      Math.random() * cnv.height - 50
+    );
+    player.score++;
+    obstacle.color = Math.random() > 0.5 ? "white" : "white";
+    // txt = document.createTextNode(player.score);
+    scoreSpan.innerHTML = player.score;
+  }
+}
+function moveElement(element, x, y) {
+  element.x = x;
+  element.y = y;
+}
+
+function generateElement(element) {
+  ctx.fillStyle = element.color;
+  ctx.fillRect(...Object.values(element));
+}
+const img = new Image();
+
+async function draw() {
+  generateElement(canva);
+  generateElement(player);
+  generateElement(obstacle);
+  await ctx.drawImage(img, obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+}
+
+function loop() {
+  draw();
+  requestAnimationFrame(loop, cnv);
+  collision(player, obstacle);
+}
+
+loop();
+
+img.src = "https://icon-library.com/images/fire-icon-png/fire-icon-png-25.jpg";
