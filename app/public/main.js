@@ -1,9 +1,22 @@
 var socket = io();
+let startTime;
 socket.on("connect", function () {
   console.log("Connected");
 });
 
 socket.on("data", function (data) {
+  if (ws_data.length === 0) {
+    startTime = new Date();
+    ws_data.push({
+      "Time[ms]": 0,
+      Xraw: 0,
+      Yraw: 0,
+      Zraw: 0,
+      Xnorm: 0,
+      Ynorm: 0,
+      Znorm: 0,
+    });
+  }
   const dataArray = data.split(" ");
   const Xraw = dataArray[3];
   const Yraw = dataArray[6];
@@ -12,6 +25,7 @@ socket.on("data", function (data) {
   const Ynorm = dataArray[15];
   const Znorm = dataArray[18].replace("\r\n", "");
   const dataObj = {
+    "Time[ms]": timeBetweenInMs(new Date(), startTime),
     Xraw: Xraw,
     Yraw: Yraw,
     Zraw: Zraw,
@@ -19,10 +33,9 @@ socket.on("data", function (data) {
     Ynorm: Ynorm,
     Znorm: Znorm,
   };
-  console.log(dataObj);
-  ws_data.push(dataObj);
-
   moveElement(player, -Xraw * 0.1, Yraw * 0.1);
+  ws_data.push(dataObj);
+  console.log(dataObj);
 });
 function sendMessage(message) {
   fetch("http://localhost:3000/connect", {
@@ -159,3 +172,8 @@ function loop() {
 loop();
 
 img.src = "https://icon-library.com/images/fire-icon-png/fire-icon-png-25.jpg";
+
+function timeBetweenInMs(date1, date2) {
+  const diffInMs = Math.abs(date2 - date1);
+  return diffInMs;
+}
