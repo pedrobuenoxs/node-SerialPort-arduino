@@ -73,7 +73,7 @@ void loop()
 {
   Vector rawAccel = mpu.readRawAccel();
   Vector normAccel = mpu.readNormalizeAccel();
-
+  
   Serial.print(" Xraw = ");
   Serial.print(rawAccel.XAxis);
   Serial.print(" Yraw = ");
